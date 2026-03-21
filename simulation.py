@@ -26,14 +26,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from openai import OpenAI
+from dotenv import load_dotenv
 
-# Load .env if present
-_env_file = Path(__file__).parent / ".env"
-if _env_file.exists():
-    for _line in _env_file.read_text().splitlines():
-        if "=" in _line and not _line.startswith("#"):
-            _k, _v = _line.split("=", 1)
-            os.environ.setdefault(_k.strip(), _v.strip())
+load_dotenv()
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use("Agg")
