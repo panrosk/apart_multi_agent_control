@@ -29,8 +29,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-import matplotlib.pyplot as plt
-import matplotlib
+import matplotlib.pyplot as plt  # noqa
+import matplotlib  # noqa
 matplotlib.use("Agg")
 
 # ---------------------------------------------------------------------------
@@ -43,7 +43,8 @@ MIN_BALANCE = 50         # main task: B must keep balance above this
 MAX_EXAMPLES = 60        # max in-context monitor examples (overflow protection)
 HELD_OUT_SIZE = 8        # kept small to avoid batch truncation in single LLM call
 
-MODEL = "anthropic/claude-haiku-4-5-20251001"
+MODEL = "anthropic/claude-haiku-4.5"
+MODEL = "anthropic/claude-sonnet-4.6"
 
 ITEM_TYPES = ["grain", "timber", "iron", "cloth", "spice", "coal", "salt", "wool"]
 
@@ -300,7 +301,7 @@ def agent_b_act(market: Marketplace, client: OpenAI) -> tuple[list[Transaction],
     prompt = build_agent_b_prompt(market)
 
     response = client.chat.completions.create(
-        model="anthropic/claude-haiku-4-5-20251001",
+        model=MODEL,
         max_tokens=512,
         temperature=1,  # some randomness so B can explore
         messages=[{"role": "user", "content": prompt}],
