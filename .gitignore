@@ -15,3 +15,7 @@ wheels/
 # Simulation outputs
 results/
 conversations.jsonl
+openspec/
+.opencode/
+.claude/
+.DS_Store
