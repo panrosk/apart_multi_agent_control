@@ -157,7 +157,7 @@ def run_asymmetric_simulation(
 
     random.seed(seed)
     held_out = build_held_out_attacks()
-    print(f"{tag} Held-out attack set: {len(held_out)} relay pairs")
+    print(f"{tag} Held-out attack set: {len(held_out)} scenarios")
 
     all_metrics: list[RoundMetrics] = []
     cumulative = {

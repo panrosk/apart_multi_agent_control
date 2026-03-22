@@ -51,6 +51,7 @@ gemini3flashlite = "google/gemini-3.1-flash-lite-preview"
 haiku45 = "anthropic/claude-haiku-4.5"
 
 MONITOR_MODEL = "anthropic/claude-sonnet-4-6"
+MONITOR_MODEL = gemini3flashlite
 ADVERSARY_MODEL = gemini3flashlite
 BENIGN_MODEL = gemini3flashlite
 
@@ -832,9 +833,11 @@ def _run_simulation_inner(seed: int, run_dir: Path) -> list[RoundMetrics] | None
     # Build held-out red team (fixed per seed)
     random.seed(seed)
     held_out = build_held_out_attacks()
-    print(f"{tag} Held-out attack set: {len(held_out)} relay pairs ({len(held_out)*2} hops total)")
-    for i, (h1, h2) in enumerate(held_out):
-        print(f"  pair {i}: {h1.to_text()}  +  {h2.to_text()}")
+    total_hops = sum(len(s) for s in held_out)
+    print(f"{tag} Held-out attack set: {len(held_out)} scenarios ({total_hops} hops total)")
+    for i, scenario in enumerate(held_out):
+        hops_str = "  +  ".join(tx.to_text() for tx in scenario)
+        print(f"  scenario {i}: {hops_str}")
     print()
 
     all_metrics: list[RoundMetrics] = []
