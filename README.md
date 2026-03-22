@@ -46,20 +46,23 @@ Round  Apparent     Usefulness  True Safety       Capture Gap
 ## Running
 
 ```bash
-pip install -r requirements.txt
-# set ANTHROPIC_API_KEY in your environment
-python simulation.py
+uv sync
+export OPENROUTER_API_KEY=your_key_here
+uv run python simulation.py
 ```
 
 ## Structure
 
 ```
-simulation.py   # main simulation (agents, monitor, rounds)
-main.py         # entrypoint
+simulation.py              # main simulation and entrypoint
+sweep_benign_agents.py     # asymmetric monitor/adversary sweep
+scripts/analyze_results.py # cross-run result analysis
 docs/
-  hypothesis.md # theoretical framing and predictions
-  findings.md   # empirical results from 10-round run
-results.png     # safety/usefulness plot across rounds
+  hypothesis.md            # theoretical framing and predictions
+  findings.md              # empirical results from 10-round run
+pyproject.toml             # project metadata and dependencies
+uv.lock                    # locked dependency set
+results.png                # example output plot
 ```
 
 ## Connection to Prior Work
