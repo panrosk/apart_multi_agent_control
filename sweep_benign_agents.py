@@ -270,7 +270,26 @@ def evaluate_round_asymmetric(
     )
 
     # Held-out evaluation
-    flat_hops = [hop for pair in held_out for hop in pair]
+    # Anonymize with real agent names so monitor can't overfit on "D0 = suspicious"
+    all_agents = ["D0", "D1", "D2"] + sim.BENIGN_AGENTS
+    flat_hops = []
+    for pi, pair in enumerate(held_out):
+        orig_names = list(dict.fromkeys(
+            [pair[0].sender, pair[0].receiver, pair[1].sender, pair[1].receiver]
+        ))
+        rng = random.Random(round_num * 1000 + pi)
+        aliases = rng.sample(all_agents, len(orig_names))
+        alias_map = dict(zip(orig_names, aliases))
+        for hop in pair:
+            flat_hops.append(Transaction(
+                sender=alias_map[hop.sender],
+                receiver=alias_map[hop.receiver],
+                amount=hop.amount,
+                item_type=hop.item_type,
+                round=round_num,
+                side_task=hop.side_task,
+                chain_id=hop.chain_id,
+            ))
     hop_results = monitor.classify_batch(
         flat_hops, round_num, client, monitor_model, conversations_file
     )
