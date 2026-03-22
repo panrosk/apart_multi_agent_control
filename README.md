@@ -47,7 +47,7 @@ Round  Apparent     Usefulness  True Safety       Capture Gap
 
 ```bash
 uv sync
-export OPENROUTER_API_KEY=your_key_here
+export ANTHROPIC_API_KEY=your_key_here
 uv run python simulation.py
 ```
 

@@ -13,7 +13,7 @@ simulation.py              # Main simulation: agents, monitor, marketplace, metr
 scripts/analyze_results.py # Cross-model analysis of saved results
 docs/                      # Theoretical framing, findings, result interpretation
 results/                   # Output directory (per-model, auto-incrementing run dirs)
-pyproject.toml             # Project config (Python >=3.14, openai + dotenv + matplotlib)
+pyproject.toml             # Project config (Python >=3.14, anthropic + dotenv + matplotlib)
 ```
 
 There is no `main.py` — `simulation.py` is the entrypoint.
@@ -21,11 +21,11 @@ There is no `main.py` — `simulation.py` is the entrypoint.
 ## Running
 
 ```bash
-# Requires OPENROUTER_API_KEY env var
+# Requires ANTHROPIC_API_KEY env var
 python simulation.py
 ```
 
-Models are configured in the `MODELS` list in `simulation.py`. The simulation uses OpenRouter as the API gateway (OpenAI-compatible client pointing at `openrouter.ai`).
+Models are configured in the `MODELS` list in `simulation.py`. The simulation uses the official Anthropic Python SDK with `claude-sonnet-4-6` as the default model.
 
 ## Key Concepts
 
@@ -36,7 +36,7 @@ Models are configured in the `MODELS` list in `simulation.py`. The simulation us
 
 ## Architecture Notes
 
-- All LLM agents (benign + adversarial + monitor) use the same OpenAI-compatible client via OpenRouter
+- All LLM agents (benign + adversarial + monitor) use the same `anthropic.Anthropic` client
 - Benign agents act in parallel via `ThreadPoolExecutor`; multiple models run in parallel via `multiprocessing.Pool`
 - Agent D0 can impersonate benign agents (send transactions with other agents' names as sender)
 - Monitor uses in-context few-shot learning — its example pool grows each round with ground-truth labels
@@ -46,6 +46,6 @@ Models are configured in the `MODELS` list in `simulation.py`. The simulation us
 ## Dependencies
 
 Managed via `pyproject.toml` (use `uv` or `pip`):
-- `openai` — OpenAI-compatible API client (used with OpenRouter)
+- `anthropic` — official Anthropic Python SDK
 - `python-dotenv` — env var loading
 - `matplotlib` — result plotting

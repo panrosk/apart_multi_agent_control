@@ -16,7 +16,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 
 import numpy as np
-from openai import OpenAI
+from anthropic import Anthropic
 from dotenv import load_dotenv
 
 import matplotlib
@@ -40,12 +40,9 @@ load_dotenv()
 # Config
 # ---------------------------------------------------------------------------
 
-gemini3flashlite = "google/gemini-3.1-flash-lite-preview"
-haiku45 = "anthropic/claude-haiku-4-5"
-MONITOR_MODEL = "anthropic/claude-sonnet-4-6"
-MONITOR_MODEL = "google/gemini-3-flash-preview"
-ADVERSARY_MODEL = gemini3flashlite
-BENIGN_MODEL = gemini3flashlite  # benign agents use weak model (cheaper)
+MONITOR_MODEL = "claude-sonnet-4-6"
+ADVERSARY_MODEL = "claude-sonnet-4-6"
+BENIGN_MODEL = "claude-sonnet-4-6"
 
 SEEDS = [42, 123, 456]
 
@@ -129,14 +126,11 @@ def run_asymmetric_simulation(
     """Run one full simulation with separate models for monitor/adversary/benign agents."""
     configure_benign_agents(num_benign)
 
-    api_key = os.environ.get("OPENROUTER_API_KEY")
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        raise ValueError("OPENROUTER_API_KEY environment variable not set")
+        raise ValueError("ANTHROPIC_API_KEY environment variable not set")
 
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=api_key,
-    )
+    client = Anthropic(api_key=api_key)
 
     run_dir = _run_dir_for(num_benign, seed, monitor_model, adversary_model, benign_model)
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -241,7 +235,7 @@ def evaluate_round_asymmetric(
     trades_with_a: int,
     held_out: list[tuple[Transaction, Transaction]],
     monitor: Monitor,
-    client: OpenAI,
+    client: Anthropic,
     cumulative: dict,
     monitor_model: str,
     conversations_file: str,

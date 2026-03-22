@@ -21,11 +21,7 @@ BENIGN_AGENTS = ["D3", "D4", "D5", "D6", "D7"]
 
 # Map model directory names to their latest run
 MODELS = {
-    "anthropic--claude-haiku-4.5": "1",
-    "anthropic--claude-sonnet-4.6": "1",
-    "google--gemini-3.1-flash-lite-preview": "0",
-    "openai--gpt-oss-20b:free": "0",
-    "openai--gpt-oss-120b:free": "5",
+    "claude-sonnet-4-6": "seed_42",
 }
 
 
