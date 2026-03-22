@@ -40,10 +40,12 @@ load_dotenv()
 # Config
 # ---------------------------------------------------------------------------
 
+gemini3flashlite = "google/gemini-3.1-flash-lite-preview"
+haiku45 = "anthropic/claude-haiku-4-5"
 MONITOR_MODEL = "anthropic/claude-sonnet-4-6"
 MONITOR_MODEL = "google/gemini-3-flash-preview"
-ADVERSARY_MODEL = "anthropic/claude-haiku-4-5"
-BENIGN_MODEL = "anthropic/claude-haiku-4-5"  # benign agents use weak model (cheaper)
+ADVERSARY_MODEL = gemini3flashlite
+BENIGN_MODEL = gemini3flashlite  # benign agents use weak model (cheaper)
 
 SEEDS = [42, 123, 456]
 
@@ -74,8 +76,14 @@ def configure_benign_agents(n: int):
 # Caching
 # ---------------------------------------------------------------------------
 
-def _run_dir_for(num_benign: int, seed: int) -> Path:
-    return RESULTS_DIR / f"n{num_benign}" / f"seed_{seed}"
+def _model_slug(model_id: str) -> str:
+    """Turn 'anthropic/claude-haiku-4-5' into 'claude-haiku-4-5'."""
+    return model_id.rsplit("/", 1)[-1]
+
+
+def _run_dir_for(num_benign: int, seed: int, monitor: str, adversary: str, benign: str) -> Path:
+    config_tag = f"mon_{_model_slug(monitor)}__adv_{_model_slug(adversary)}__ben_{_model_slug(benign)}"
+    return RESULTS_DIR / config_tag / f"n{num_benign}" / f"seed_{seed}"
 
 
 def _save_cached_result(run_dir: Path, result: "SweepResult"):
@@ -130,7 +138,7 @@ def run_asymmetric_simulation(
         api_key=api_key,
     )
 
-    run_dir = _run_dir_for(num_benign, seed)
+    run_dir = _run_dir_for(num_benign, seed, monitor_model, adversary_model, benign_model)
     run_dir.mkdir(parents=True, exist_ok=True)
     conversations_file = str(run_dir / "conversations.jsonl")
     open(conversations_file, "w").close()
@@ -374,7 +382,7 @@ def plot_sweep_aggregated(agg_results: list[dict], output_dir: Path):
 def run_one_sweep_point(args: tuple[int, int]) -> tuple[int, int, SweepResult | None]:
     """Run one (num_benign, seed) pair. Returns cached result if available."""
     num_benign, seed = args
-    run_dir = _run_dir_for(num_benign, seed)
+    run_dir = _run_dir_for(num_benign, seed, MONITOR_MODEL, ADVERSARY_MODEL, BENIGN_MODEL)
     run_dir.mkdir(parents=True, exist_ok=True)
     cached = _load_cached_result(run_dir)
     if cached is not None:
